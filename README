@@ -1,17 +1,59 @@
-RNNoise is a noise suppression library based on a recurrent neural network.
+IMPLEMENTATION:
 
-To compile, just type:
-% ./autogen.sh
-% ./configure
-% make
+As mentioned in our PPT, we have used the rnnoise framework to achieve good noise suppression. To make sure that our network shows good performance with different varieties and intensities of noise, it is essential that we train it with scalable and flexible datasets-
+The dataset should be scalable as a function of number of speakers, noise types and SNR levels desired. It should also be able to accommodate new noise.
+It should be able to work with files of different durations, sampling rate and SNR levels.
 
-Optionally:
-% make install
+For this purpose we have chosen the following datasets to generate our final model-
+For a clean dataset, we choose the Edinburgh 56 speaker clean speech dataset (28 male and 28 female speakers). This dataset has over 23K clips of speakers reading a short sentence (median length 2.6 seconds).
+For our noise dataset, we hand-pick certain samples from the DEMAND database and freesound.org. There are a few categories of noise such as air conditioner, announcements, multi-talker blabber and  traffic to list a few.
 
-While it is meant to be used as a library, a simple command-line tool is
-provided as an example. It operates on RAW 16-bit (machine endian) mono
-PCM files sampled at 48 kHz. It can be used as:
+The files from the noise dataset are added to the clean dataset to form the mixed dataset. For training using the rnnoise library we supply the samples from the clean and the corresponding sample from the mixed dataset to the model. Once the entire model is trained, it is ready to perform noise suppression on the required noisy input dataset. 
 
-./examples/rnnoise_demo <number of channels> <maximum attenuation> < input.raw > output.raw
+We are attaching our final github repo (https://github.com/anweshm136/rnnoise) with the trained model in this README file. The noisy files are kept in the Input folder. The steps to run the model are-
+./autogen.sh
+./configure
+make
+(optional) make install
+python3 main.py
 
-The output is also a 16-bit raw PCM file.
+There are few input files which have stereo channels rather than mono channel, we convert them into a single channel by taking the average of the two channels, since RNNoise model takes only RAW 16bit mono pcm files as input. We have made sure that the sampling rate of the input and output signals are the same. All these can be seen in main.py.
+
+The main.py contains the code to extract samples from the Input folder, convert it into RAW format using ffmpeg, feed the RAW file into the model and obtain the processed RAW file and finally use sox to generate the noise-suppressed WAV file. (ffmpeg and sox are open-source softwares used for processing audio files). The final files are located in the Output folder.
+
+
+
+SUBMISSION DESCRIPTION
+As a part of our submission we are attaching, an ‘output’ directory having all the denoised(after removing background speeches) audio files in.wav format. 
+The ‘output’ directory also contains all the .json files outputted by the ASR api.
+The name of the json files is of the form audio_id.json. The audio_id is same as that of the corresponding .wav audio file
+A csv file named ‘final_ouput.csv’ also has been attached, it consists of the following columns:
+Audio ID
+Output transcription 1
+Output transcription 2
+Flipkart transcription
+Error 1
+Error 2
+Final word error rate
+The api outputs a json file having 2 output transcriptions, both of which as mentioned above has been added to the csv file. The original transcription provided has also been included(Flipkart transcription). Also the word error rate corresponding to each has been calculated(Error 1 and 2) and stored in the csv. The best one of the both has been used as our final word error rate.
+
+Also a video file ‘flipkart.webm’ has been added. It describes the working of our code on the list of input audio files in the ‘input’ directory, provided to us and how it generates the corresponding denoised version of the input audio in the ‘output’ directory
+
+Current performance of the code:
+The currently computed word error rate averaged across all the input audio files is as given below. 
+
+Final Mean WER: 0.514
+
+Remarks on the obtained value of wer:
+
+There were certain cases where the same words were written in different formats in the given transcripts, for ex. -
+    In Audio 18.mp3, the transcripts generated after denoising was- 
+    एप्पल वाच सीरीज फॉर जीपीएस कितने की आती है
+    and the given reference transcript was-
+ एप्पल वाच सीरीज फॉर जी पी एस कितने की आती हैं, which led to WER of  0.36
+
+For certain audios, the transcripts for secondary (background) speakers were also mentioned in the given reference transcripts, which further led to high word error rates. Our current model only identifies the primary speaker and tries to remove everything else.
+
+Better denoising and thus lower word error rates can be achieved by including more categories of noise and increasing the number of epochs while training.
+
+
