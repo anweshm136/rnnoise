@@ -54,6 +54,6 @@ There were certain cases where the same words were written in different formats 
 
 For certain audios, the transcripts for secondary (background) speakers were also mentioned in the given reference transcripts, which further led to high word error rates. Our current model only identifies the primary speaker and tries to remove everything else.
 
-Better denoising and thus lower word error rates can be achieved by including more categories of noise and increasing the number of epochs while training.
+Better denoising and thus lower word error rates can be achieved by including more categories of noise and increasing the number of epochs while training. Further to improve the model, more layers can be added to increase the capacity as well as feature extraction capabilities of the library.
 
 
