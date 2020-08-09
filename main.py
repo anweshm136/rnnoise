@@ -6,8 +6,11 @@ import numpy as np
 
 ip_path="input/"
 wav_path="wav/"
+os.mkdir(wav_path)
 ipraw_path="input_raw/"
+os.mkdir(ipraw_path)
 opraw_path="output_raw/"
+os.mkdir(opraw_path)
 op_path="output/"
 
 for filename in os.listdir(ip_path):
