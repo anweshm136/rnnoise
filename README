@@ -17,6 +17,8 @@ make
 (optional) make install
 python3 main.py
 
+(Note- Three other folders (input_raw , output_raw, wav) will be generated once the script is run. Each will contain a separate stage of files after processing.)
+
 There are few input files which have stereo channels rather than mono channel, we convert them into a single channel by taking the average of the two channels, since RNNoise model takes only RAW 16bit mono pcm files as input. We have made sure that the sampling rate of the input and output signals are the same. All these can be seen in main.py.
 
 The main.py contains the code to extract samples from the Input folder, convert it into RAW format using ffmpeg, feed the RAW file into the model and obtain the processed RAW file and finally use sox to generate the noise-suppressed WAV file. (ffmpeg and sox are open-source softwares used for processing audio files). The final files are located in the Output folder.
